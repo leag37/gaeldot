@@ -11,5 +11,7 @@ My personal dotfiles, cobbled together from various tutorials, articles, and cus
 echo $0
 ```
 
-3. Run the corresponding installation script
-   1. If -zsh, run `./zsh/install.zsh`
+## ZSH
+
+1. To install Weztern, open the terminal and run `brew install --cask wezterm`
+2. Open Wezterm, and run `./zsh/install.zsh`

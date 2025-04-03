@@ -120,7 +120,7 @@ return {
 			},
 		}
 
-		colors = colors.catppuccin_mocha
+		colors = colors.catppuccin_macchiato
 
 		local config = {
 			options = {
