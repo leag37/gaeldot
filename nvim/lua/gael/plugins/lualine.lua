@@ -65,7 +65,7 @@ return {
 			end,
 		}
 
-		local colors = {
+		local color_selection = {
 			normal = {
 				bg = "#202328",
 				fg = "#bbc2cf",
@@ -120,7 +120,7 @@ return {
 			},
 		}
 
-		colors = colors.catppuccin_macchiato
+		local colors = color_selection.catppuccin_mocha
 
 		local config = {
 			options = {
@@ -133,6 +133,7 @@ return {
 					-- We are going to use lualine_c an lualine_x as left and
 					-- right section. Both are highlighted by c theme .  So we
 					-- are just setting default looks o statusline
+					--"catppuccin",
 					normal = { c = { fg = colors.fg, bg = colors.bg } },
 					inactive = { c = { fg = colors.fg, bg = colors.bg } },
 				},

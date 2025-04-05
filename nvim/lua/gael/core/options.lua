@@ -34,4 +34,3 @@ opt.clipboard:append("unnamedplus") -- also use the system clipboard when when c
 -- Window splitting
 opt.splitright = true -- split vertical windows towards the right
 opt.splitbelow = true -- split horizontal windows towards the bottom
-
