@@ -25,6 +25,7 @@ brew install ninja
 brew install tree
 brew install tree-sitter
 brew install zoxide
+brew install ripgrep
 
 # Start copying all current installs into our dotfiles directory, but first do a cleanup
 rm -rf ~/.dotfiles # Remove any existing dotfiles first to make sure we have a clean install
