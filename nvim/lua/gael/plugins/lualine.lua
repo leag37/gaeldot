@@ -1,6 +1,7 @@
 return {
 	"nvim-lualine/lualine.nvim",
-	dependencies = { "nvim-tree/nvim-web-devicons" },
+	dependencies = { "nvim-tree/nvim-web-devicons", "Shatur/neovim-tasks" },
+	event = "VeryLazy",
 	config = function()
 		-- local lualine = require("lualine")
 		-- local lazy_status = require("lazy.status") -- configure lazy pending updates
@@ -26,26 +27,63 @@ return {
 
 		local lualine = require("lualine")
 
+		local Path = require("plenary.path")
+		local tasks = require("tasks")
+		local ProjectConfig = require("tasks.project_config")
+		local cmake_utils = require("tasks.cmake_utils.cmake_utils")
+		local cmake_presets = require("tasks.cmake_utils.cmake_presets")
+		local cmake_config = ProjectConfig:new()["cmake"]
+
+		-- checks whether this is a cmake project
+		local function is_cmake_project()
+			if not cmake_config then
+				return false
+			end
+
+			local cmakelists_dir = cmake_config.source_dir and cmake_config.source_dir or vim.loop.cwd()
+			return (Path:new(cmakelists_dir) / "CMakeLists.txt"):exists()
+		end
+
+		local function cmakeStatus()
+			local cmakelists_dir = cmake_config.source_dir and cmake_config.source_dir or vim.loop.cwd()
+			if (Path:new(cmakelists_dir) / "CMakeLists.txt"):exists() then
+				if cmake_utils.shouldUsePresets(cmake_config) then
+					local preset = cmake_config.build_preset or "not selected"
+					local cmakeTarget = cmake_config.target and cmake_config.target or "all"
+
+					return "CMake preset: " .. preset .. ", target: " .. cmakeTarget
+				else
+					local cmakeBuildType = cmake_config.build_type or "not selected"
+					local cmakeKit = cmake_config.build_kit or "not selected"
+					local cmakeTarget = cmake_config.target or "all"
+
+					return "CMake variant: " .. cmakeBuildType .. ", kit: " .. cmakeKit .. ", target: " .. cmakeTarget
+				end
+			else
+				return ""
+			end
+		end
+
 		local cmake = require("cmake-tools")
 
 		-- Add keybindings for cmake related to building
-		if cmake.is_cmake_project() then
-			local keymap = vim.keymap
-			keymap.set("n", "<F4>", "<cmd>CMakeBuild<CR>", { desc = "Build the currently configured CMake project" })
-			keymap.set("n", "<F5>", "<cmd>CMakeDebug<CR>", { desc = "Debug the currently configured CMake project" })
-			keymap.set(
-				"n",
-				"<S-F5>",
-				"<cmd>CMakeRun<CR>",
-				{ desc = "Run (no debugger) the currently configured CMake project" }
-			)
-			keymap.set(
-				"n",
-				"<leader>cx",
-				"<cmd>CMakeCloseExecutor<CR>",
-				{ desc = "Close the CMake window in the bottom" }
-			)
-		end
+		-- if cmake.is_cmake_project() then
+		-- 	local keymap = vim.keymap
+		-- 	keymap.set("n", "<F4>", "<cmd>CMakeBuild<CR>", { desc = "Build the currently configured CMake project" })
+		-- 	keymap.set("n", "<F5>", "<cmd>CMakeDebug<CR>", { desc = "Debug the currently configured CMake project" })
+		-- 	keymap.set(
+		-- 		"n",
+		-- 		"<S-F5>",
+		-- 		"<cmd>CMakeRun<CR>",
+		-- 		{ desc = "Run (no debugger) the currently configured CMake project" }
+		-- 	)
+		-- 	keymap.set(
+		-- 		"n",
+		-- 		"<leader>cx",
+		-- 		"<cmd>CMakeCloseExecutor<CR>",
+		-- 		{ desc = "Close the CMake window in the bottom" }
+		-- 	)
+		-- end
 
 		-- you can find the icons from https://github.com/Civitasv/runvim/blob/master/lua/config/icons.lua
 		local icons = require("gael.plugins.config.icons")
@@ -240,103 +278,137 @@ return {
 			},
 		})
 
+		local function should_use_cmake_presets()
+			if is_cmake_project() then
+				return cmake_utils.shouldUsePresets(cmake_config)
+			end
+
+			return false
+		end
+
+		local function get_cmake_preset()
+			local preset = cmake_config.build_preset or "not selected"
+			local cmakeTarget = cmake_config.target and cmake_config.target or "all"
+			return "CMake: [" .. (preset and preset or "preset") .. "]"
+		end
+
+		local function get_cmake_build_type()
+			if not should_use_cmake_presets() then
+				local build_type = cmake_utils.getCurrentBuildType()
+				return "Type: [" .. (build_type and build_type or "build_type") .. "]"
+			end
+			return "build_type"
+		end
+
 		ins_left({
 			function()
-				local c_preset = cmake.get_configure_preset()
-				return "CMake: [" .. (c_preset and c_preset or "X") .. "]"
+				return "CMake"
 			end,
-			icon = icons.ui.Search,
 			cond = function()
-				return cmake.is_cmake_project() and cmake.has_cmake_preset()
-			end,
-			on_click = function(n, mouse)
-				if n == 1 then
-					if mouse == "l" then
-						vim.cmd("CMakeSelectConfigurePreset")
-					end
-				end
+				return is_cmake_project()
 			end,
 		})
 
 		ins_left({
 			function()
-				local type = cmake.get_build_type()
-				return "CMake: [" .. (type and type or "") .. "]"
-			end,
-			icon = icons.ui.Search,
-			cond = function()
-				return cmake.is_cmake_project() and not cmake.has_cmake_preset()
-			end,
-			on_click = function(n, mouse)
-				if n == 1 then
-					if mouse == "l" then
-						vim.cmd("CMakeSelectBuildType")
-					end
-				end
-			end,
-		})
-
-		ins_left({
-			function()
-				local kit = cmake.get_kit()
-				return "[" .. (kit and kit or "X") .. "]"
+				local kit = cmake_config.build_kit
+				return "Kit: [" .. (kit and kit or "no kit") .. "]"
 			end,
 			icon = icons.ui.Pencil,
 			cond = function()
-				return cmake.is_cmake_project() and not cmake.has_cmake_preset()
+				return is_cmake_project()
 			end,
 			on_click = function(n, mouse)
 				if n == 1 then
 					if mouse == "l" then
-						vim.cmd("CMakeSelectKit")
+						tasks.set_module_param("cmake", "build_kit")
 					end
 				end
 			end,
 		})
+
+		ins_left({
+			function()
+				local type = get_cmake_build_type()
+				return type
+			end,
+			icon = icons.ui.Search,
+			cond = function()
+				return not should_use_cmake_presets()
+			end,
+			on_click = function(n, mouse)
+				if n == 1 then
+					if mouse == "l" then
+						tasks.set_module_param("cmake", "build_type")
+					end
+				end
+			end,
+		})
+
+		--
+		-- ins_left({
+		-- 	function()
+		-- 		local b_preset = cmake.get_build_preset()
+		-- 		return "[" .. (b_preset and b_preset or "X") .. "]"
+		-- 	end,
+		-- 	icon = icons.ui.Search,
+		-- 	cond = function()
+		-- 		return cmake.is_cmake_project() and cmake.has_cmake_preset()
+		-- 	end,
+		-- 	on_click = function(n, mouse)
+		-- 		if n == 1 then
+		-- 			if mouse == "l" then
+		-- 				vim.cmd("CMakeSelectBuildPreset")
+		-- 			end
+		-- 		end
+		-- 	end,
+		-- })
+		--
+		ins_left({
+			function()
+				return "Target: [" .. (cmake_config.target and cmake_config.target or "X") .. "]"
+			end,
+			cond = function()
+				return is_cmake_project()
+			end,
+			on_click = function(n, mouse)
+				if n == 1 then
+					if mouse == "l" then
+						vim.cmd("Task set_module_param cmake target")
+					end
+				end
+			end,
+		})
+
+		-- ins_left({
+		-- 	function()
+		-- 		local l_target = cmake.get_launch_target()
+		-- 		return "[" .. (l_target and l_target or "X") .. "]"
+		-- 	end,
+		-- 	cond = function()
+		-- 		return is_cmake_project()
+		-- 	end,
+		-- 	on_click = function(n, mouse)
+		-- 		if n == 1 then
+		-- 			if mouse == "l" then
+		-- 				vim.cmd("CMakeSelectLaunchTarget")
+		-- 			end
+		-- 		end
+		-- 	end,
+		-- })
 
 		ins_left({
 			function()
 				return "Build"
 			end,
 			icon = icons.ui.Gear,
-			cond = cmake.is_cmake_project,
-			on_click = function(n, mouse)
-				if n == 1 then
-					if mouse == "l" then
-						vim.cmd("CMakeBuild")
-					end
-				end
-			end,
-		})
-
-		ins_left({
-			function()
-				local b_preset = cmake.get_build_preset()
-				return "[" .. (b_preset and b_preset or "X") .. "]"
-			end,
-			icon = icons.ui.Search,
 			cond = function()
-				return cmake.is_cmake_project() and cmake.has_cmake_preset()
+				return is_cmake_project()
 			end,
 			on_click = function(n, mouse)
 				if n == 1 then
 					if mouse == "l" then
-						vim.cmd("CMakeSelectBuildPreset")
-					end
-				end
-			end,
-		})
-
-		ins_left({
-			function()
-				local b_target = cmake.get_build_target()
-				return "[" .. (b_target and b_target or "X") .. "]"
-			end,
-			cond = cmake.is_cmake_project,
-			on_click = function(n, mouse)
-				if n == 1 then
-					if mouse == "l" then
-						vim.cmd("CMakeSelectBuildTarget")
+						vim.cmd("Task start cmake build")
 					end
 				end
 			end,
@@ -346,11 +418,13 @@ return {
 			function()
 				return icons.ui.Debug
 			end,
-			cond = cmake.is_cmake_project,
+			cond = function()
+				return is_cmake_project()
+			end,
 			on_click = function(n, mouse)
 				if n == 1 then
 					if mouse == "l" then
-						vim.cmd("CMakeDebug")
+						vim.cmd("Task start cmake debug")
 					end
 				end
 			end,
@@ -360,26 +434,13 @@ return {
 			function()
 				return icons.ui.Run
 			end,
-			cond = cmake.is_cmake_project,
+			cond = function()
+				return is_cmake_project()
+			end,
 			on_click = function(n, mouse)
 				if n == 1 then
 					if mouse == "l" then
-						vim.cmd("CMakeRun")
-					end
-				end
-			end,
-		})
-
-		ins_left({
-			function()
-				local l_target = cmake.get_launch_target()
-				return "[" .. (l_target and l_target or "X") .. "]"
-			end,
-			cond = cmake.is_cmake_project,
-			on_click = function(n, mouse)
-				if n == 1 then
-					if mouse == "l" then
-						vim.cmd("CMakeSelectLaunchTarget")
+						vim.cmd("Task start cmake run")
 					end
 				end
 			end,

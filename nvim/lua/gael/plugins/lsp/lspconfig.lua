@@ -90,21 +90,27 @@ return {
 			})
 		end
 
-		mason_lspconfig.setup_handlers({
-			function(server_name)
-				lspconfig[server_name].setup({
-					capabilities = capabilities,
-				})
-			end,
-			["clangd"] = function()
-				lspconfig["clangd"].setup({
-					capabilities = capabilities,
-					on_attach = function(client, bufnr)
-						client.server_capabilities.signatureHelpProvider = false
-						-- on_attach(client, bufnr)
-					end,
-				})
-			end,
+		vim.lsp.config("clangd", {
+			-- settings
+			cmd = require("tasks.cmake_utils.cmake_utils").currentClangdArgs(),
 		})
+		--       vim.lsp.config()
+		-- mason_lspconfig.setup_handlers({
+		-- 	function(server_name)
+		-- 		lspconfig[server_name].setup({
+		-- 			capabilities = capabilities,
+		-- 		})
+		-- 	end,
+		-- 	["clangd"] = function()
+		-- 		lspconfig["clangd"].setup({
+		-- 			capabilities = capabilities,
+		-- 			on_attach = function(client, bufnr)
+		-- 				client.server_capabilities.signatureHelpProvider = false
+		-- 				-- on_attach(client, bufnr)
+		-- 			end,
+		-- 			cmd = require("tasks.cmake_utils.cmake_utils").currentClangdArgs(),
+		-- 		})
+		-- 	end,
+		-- })
 	end,
 }
