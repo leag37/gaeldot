@@ -19,6 +19,9 @@ brew install lazygit
 brew install node
 
 # Utilities
+brew install llvm
+brew install lld
+brew install clang-format
 brew install cmake
 brew install dotnet
 brew install eza
@@ -64,6 +67,7 @@ ln -s ~/.dotfiles/tmux/.tmux.conf ~/.tmux.conf
 echo "source $(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme" >> ~/.zshrc
 echo "source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ~/.zshrc
 echo "source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ~/.zshrc
+echo "export PATH=\"/opt/homebrew/opt/llvm/bin/:$PATH\"" >> ~/.zshrc
 
 exec /bin/zsh
 /bin/zsh -c "$(p10k configure)"

@@ -7,7 +7,7 @@ return {
 			javascript = { "eslint_d" },
 			typescript = { "eslint_d" },
 			-- c = { "clang-tidy" },
-			cpp = { "cpplint" },
+			cpp = { "clangtidy" },
 			cmake = { "cmakelint" },
 			-- glsl = { "glslc" },
 			markdown = { "markdownlint" },
