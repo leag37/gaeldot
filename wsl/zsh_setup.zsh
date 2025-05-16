@@ -10,6 +10,8 @@ echo >> /home/leag37/.zshrc
 echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/leag37/.zshrc
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 sudo apt-get install build-essential
+sudo apt install llvm
+sudo apt install clang-tidy
 
 # Brew packages
 brew install neovim
