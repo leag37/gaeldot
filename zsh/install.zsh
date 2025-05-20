@@ -19,16 +19,23 @@ brew install lazygit
 brew install node
 
 # Utilities
-brew install llvm
-brew install lld
 brew install clang-format
 brew install cmake
 brew install dotnet
 brew install eza
+brew install ffmpeg
 brew install fzf
+brew install imagemagick
+brew install jq
+brew install lld
+brew install llvm
 brew install ninja
+brew install poppler
+brew install resvg
+brew install sevenzip
 brew install tree
 brew install tree-sitter
+brew install yazi
 brew install zoxide
 brew install zsh-autosuggestions
 brew install zsh-syntax-highlighting
