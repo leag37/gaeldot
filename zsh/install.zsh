@@ -23,6 +23,7 @@ brew install clang-format
 brew install cmake
 brew install dotnet
 brew install eza
+brew install fd
 brew install ffmpeg
 brew install fzf
 brew install imagemagick
@@ -32,6 +33,7 @@ brew install llvm
 brew install ninja
 brew install poppler
 brew install resvg
+brew install ripgrep
 brew install sevenzip
 brew install tree
 brew install tree-sitter
@@ -62,6 +64,10 @@ cp -r wezterm ~/.dotfiles
 mkdir -p ~/.dotfiles/tmux
 cp -r tmux ~/.dotfiles 
 
+# Copy yazi
+mkdir -p ~/.config/yazi
+cp -r yazi ~/.config
+
 # Configure symlinks for dotfiles
 rm ~/.zshrc
 ln -s ~/.dotfiles/zsh/.zshrc ~/.zshrc
@@ -81,6 +87,9 @@ exec /bin/zsh
 
 # Source zshrc after all configurations are prepared
 /bin/zsh -c "$(source ~/.zshrc)"
+
+# Further yazi setup
+ya pack -a yazi-rs/flavors:catppuccin-macchiato
 
 # Done!
 echo "Done. Close and reopen terminal to finish setup"

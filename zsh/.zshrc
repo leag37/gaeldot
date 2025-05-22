@@ -8,6 +8,7 @@ setopt hist_ignore_dups
 setopt hist_verify
 
 # yazi support
+export EDITOR="nvim"
 function y() {
     local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
     yazi "$@" --cwd-file="$tmp"
