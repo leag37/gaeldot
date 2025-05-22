@@ -10,24 +10,34 @@ echo >> /home/leag37/.zshrc
 echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/leag37/.zshrc
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 sudo apt-get install build-essential
-sudo apt install llvm
 sudo apt install clang-tidy
+sudo apt install fd-find
+sudo apt install llvm
+sudo apt install ripgrep
+
 
 # Brew packages
-brew install neovim
-brew intall tmux
-brew install gcc
-brew install lazygit
-brew install node
 brew install cmake
 brew install dotnet
 brew install eza
+brew install ffmpeg
 brew install fzf
+brew install gcc
+brew install imagemagick
+brew install jq
+brew install lazygit
+brew install neovim
 brew install ninja
+brew install node
+brew install poppler
+brew install resvg
+brew install ripgrep
+brew install sevenzip
+brew install tmux
 brew install tree
 brew install tree-sitter
+brew install yazi
 brew install zoxide
-brew install ripgrep
 
 # Start copying all current installs into our dotfiles directory, but first do a cleanup
 rm -rf ~/.dotfiles # Remove any existing dotfiles first to make sure we have a clean install
@@ -50,6 +60,10 @@ cp -r tmux ~/.dotfiles
 rm ~/.tmux.conf
 ln -s ~/.dotfiles/tmux/.tmux.conf ~/.tmux.conf
 
+# yazi
+mkdir -p ~/.config/yazi
+cp -r yazi ~/.config
+
 # zsh setup
 sudo apt install tmux
 
@@ -64,11 +78,7 @@ echo "source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ~/.zshrc
 
 /bin/zsh -c "$(source ~/.zshrc)"
 
-# neovim
-# sudo apt-get install software-properties-common
-# sudo add-apt-repository ppa:neovim-ppa/stable
-# sudo apt-get update
-# sudo apt-get install python3-dev python3-pip
-# sudo apt-get install neovim
+# more yazi setup
+ya pack -a yazi-rs/flavors:catppuccin-macchiato
 
 echo "Done. Close and reopen terminal to finish the setup."
