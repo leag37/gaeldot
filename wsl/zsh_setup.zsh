@@ -15,6 +15,7 @@ sudo apt install fd-find
 sudo apt install llvm
 sudo apt install ripgrep
 
+sudo apt-get install plocate
 
 # Brew packages
 brew install cmake
