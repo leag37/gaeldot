@@ -45,6 +45,12 @@ return {
 				opts.desc = "Show LSP type definitions"
 				keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
 
+				opts.desc = "Show LSP workspace symbols"
+				keymap.set("n", "gS", "<cmd>Telescope lsp_workspace_symbols<CR>", opts) -- show lsp workspace symbols
+
+				opts.desc = "Show LSP document symbols"
+				keymap.set("n", "gs", "<cmd>Telescope lsp_document_symbols<CR>", opts) -- show lsp document symbols
+
 				opts.desc = "See available code actions"
 				keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- show definition, references
 
