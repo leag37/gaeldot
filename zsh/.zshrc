@@ -25,6 +25,7 @@ bindkey "^[[B" history-search-forward
 alias ls="eza --color=always --icons=always"
 
 # zoxide
+export PATH="$PATH:~/.local/bin"
 alias cd="z"
 eval "$(zoxide init zsh)"
 
